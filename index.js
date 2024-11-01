@@ -20,12 +20,12 @@ app.post("/webhook", async (req, res) => {
       const replyToken = event.replyToken;
 
       if (userMessage.startsWith("#set")) {
-        const rate = userMessage.split("#set")[1].trim();
+        const rate = toNumber(userMessage.split("#set")[1].trim());
         config[userId] = rate;
         await replyToUser(replyToken, "Setting OK");
       } else {
         const rate = getConfig(userId);
-        const response = processWithRAG(parseFloat(userMessage) * rate);
+        const response = processWithRAG(toNumber(userMessage) * rate);
         await replyToUser(replyToken, response);
       }
     }
@@ -33,6 +33,14 @@ app.post("/webhook", async (req, res) => {
 
   res.sendStatus(200);
 });
+
+function toNumber(text) {
+  try {
+    return parseFloat(text);
+  } catch (error) {
+    return 0;
+  }
+}
 
 function getConfig(userId) {
   const rate = config[userId];
