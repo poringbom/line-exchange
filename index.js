@@ -23,6 +23,9 @@ app.post("/webhook", async (req, res) => {
         const rate = toNumber(userMessage.split("#set")[1].trim());
         config[userId] = rate;
         await replyToUser(replyToken, "Setting OK");
+      } else if (userMessage.startsWith("#get")) {
+        const rate = getConfig(userId);
+        await replyToUser(replyToken, "Rate is " + rate);
       } else {
         const rate = getConfig(userId);
         const response = processWithRAG(toNumber(userMessage) * rate);
