@@ -40,7 +40,7 @@ app.post("/webhook", async (req, res) => {
           delete config[userId];
           await replyToUser(replyToken, "refresh OK, Rate is " + _defaultRate);
         } else {
-          _defaultRate = await defaultRate();
+          _defaultRate = (await defaultRate()) / 100;
           await replyToUser(
             replyToken,
             "now rate from exchange is " + _defaultRate
@@ -52,7 +52,7 @@ app.post("/webhook", async (req, res) => {
           const response = processWithRAG(toNumber(userMessage) * rate);
           await replyToUser(replyToken, response);
         } else {
-          _defaultRate = await defaultRate();
+          _defaultRate = (await defaultRate()) / 100;
           await replyToUser(
             replyToken,
             "now rate from exchange is " + _defaultRate
@@ -132,6 +132,6 @@ async function replyToUser(replyToken, message) {
 }
 
 app.listen(PORT, async () => {
-  _defaultRate = await defaultRate();
+  _defaultRate = (await defaultRate()) / 100;
   console.log(`Server is running on port ${PORT}`);
 });
