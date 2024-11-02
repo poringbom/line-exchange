@@ -71,7 +71,7 @@ async function loading(userId) {
   await axios.post(
     lineEndpoint,
     {
-      data: { chatId: userId },
+      chatId: userId,
     },
     {
       headers: {
