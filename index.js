@@ -47,7 +47,7 @@ app.post("/webhook", async (req, res) => {
       } else {
         if (isNumber(userMessage)) {
           const rate = getConfig(userId);
-          const response = processWithRAG(toNumber(value) * rate);
+          const response = processWithRAG(toNumber(userMessage) * rate);
           await replyToUser(replyToken, response);
         } else {
           const now = await defaultRate();
