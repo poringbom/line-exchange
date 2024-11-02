@@ -84,7 +84,7 @@ async function defaultRate() {
     "https://www.bot.or.th/content/bot/en/statistics/exchange-rate/jcr:content/root/container/statisticstable1.labels.json";
   const response = await axios.get(endpoint, {});
   const list = response?.data?.allCurrenciesList;
-  const rate = list.find((item) => item[currencyId] === "JPY");
+  const rate = list.find((item) => item.currencyId === "JPY");
   return rate;
 }
 
