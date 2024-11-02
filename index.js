@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 const config = {};
 
-let _defaultRate = 0;
+var _defaultRate = 0;
 
 app.get("/", async (req, res) => {
   res.sendStatus(200);
@@ -90,7 +90,7 @@ async function defaultRate() {
   const response = await axios.get(endpoint, {});
   const list = response?.data?.responseContent;
   const rate = list?.find((item) => item.currency_id === "JPY")?.selling;
-  return rate ?? 0.0;
+  return rate ?? _defaultRate;
 }
 
 async function loading(userId) {
