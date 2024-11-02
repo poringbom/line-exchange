@@ -68,7 +68,7 @@ function toNumber(text) {
 }
 
 function isNumber(text) {
-  return typeof text === "number";
+  return !isNaN(parseFloat(text));
 }
 
 function getConfig(userId) {
