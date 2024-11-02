@@ -81,10 +81,11 @@ function processWithRAG(message) {
 
 async function defaultRate() {
   const endpoint =
-    "https://www.mastercard.us/settlement/currencyrate/conversion-rate?fxDate=0000-00-00&transCurr=JPY&crdhldBillCurr=THB&bankFee=0&transAmt=1";
+    "https://www.bot.or.th/content/bot/en/statistics/exchange-rate/jcr:content/root/container/statisticstable1.labels.json";
   const response = await axios.get(endpoint, {});
-  const conversionRate = response?.data?.data?.conversionRate ?? _defaultRate;
-  return conversionRate;
+  const list = response?.data?.allCurrenciesList;
+  const rate = list.find((item) => item[currencyId] === "JPY");
+  return rate;
 }
 
 async function loading(userId) {
