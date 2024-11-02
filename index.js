@@ -12,6 +12,14 @@ const config = {};
 
 let _defaultRate = 0;
 
+app.get("/favicon.ico", async (req, res) => {
+  res.sendStatus(200);
+});
+
+app.get("/", async (req, res) => {
+  res.sendStatus(200);
+});
+
 app.post("/webhook", async (req, res) => {
   const events = req.body.events;
 
@@ -35,8 +43,14 @@ app.post("/webhook", async (req, res) => {
         } else if (command.startsWith("#re")) {
           _defaultRate = defaultRate();
           await replyToUser(replyToken, "refresh OK");
-        } else if (command.startsWith("#now")) {
-          await replyToUser(replyToken, "now rate is" + _defaultRate);
+        } else if (
+          command.startsWith("#now") ||
+          command === "#" ||
+          command === "now" ||
+          command.length === 1
+        ) {
+          const now = await defaultRate();
+          await replyToUser(replyToken, "now rate is" + now);
         } else {
           await replyToUser(replyToken, "invalid command");
         }
@@ -73,7 +87,7 @@ async function defaultRate() {
   const endpoint =
     "https://www.mastercard.us/settlement/currencyrate/conversion-rate?fxDate=0000-00-00&transCurr=JPY&crdhldBillCurr=THB&bankFee=0&transAmt=1";
   const response = await axios.get(endpoint, {});
-  const conversionRate = response?.data?.conversionRate ?? _defaultRate;
+  const conversionRate = response?.data?.data?.conversionRate ?? _defaultRate;
   return conversionRate;
 }
 
