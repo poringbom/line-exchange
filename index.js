@@ -32,13 +32,13 @@ app.post("/webhook", async (req, res) => {
         if (command.startsWith("#set")) {
           const rate = toNumber(command.split("#set")[1].trim());
           config[userId] = rate;
-          await replyToUser(replyToken, "Setting OK");
+          await replyToUser(replyToken, "Setting OK, Rate is " + rate);
         } else if (command.startsWith("#get")) {
           const rate = getConfig(userId);
           await replyToUser(replyToken, "Rate is " + rate);
         } else if (command.startsWith("#re")) {
           delete config[userId];
-          await replyToUser(replyToken, "refresh OK, Rate is " + _defaultRate);
+          await replyToUser(replyToken, "Reset OK, Rate is " + _defaultRate);
         } else {
           _defaultRate = (await defaultRate()) / 100;
           await replyToUser(
