@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 const config = {};
 
-const _defaultRate = 0;
+let _defaultRate = 0;
 
 app.post("/webhook", async (req, res) => {
   const events = req.body.events;
@@ -115,6 +115,7 @@ async function replyToUser(replyToken, message) {
   );
 }
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  _defaultRate = await defaultRate();
   console.log(`Server is running on port ${PORT}`);
 });
