@@ -14,11 +14,12 @@ app.post("/webhook", async (req, res) => {
   const events = req.body.events;
 
   for (const event of events) {
-    const userId = event.source.userId;
-    await loading(userId);
     if (event.type === "message" && event.message.type === "text") {
       const userMessage = event.message.text;
       const replyToken = event.replyToken;
+      const userId = event.source.userId;
+
+      await loading(userId);
 
       if (userMessage.startsWith("#")) {
         const command = userMessage.toLocaleLowerCase();
