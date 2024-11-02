@@ -19,21 +19,28 @@ app.post("/webhook", async (req, res) => {
       const userId = event.source.userId;
       const replyToken = event.replyToken;
 
-      if (userMessage.startsWith("#set")) {
-        const rate = toNumber(userMessage.split("#set")[1].trim());
-        config[userId] = rate;
-        await replyToUser(replyToken, "Setting OK");
-      } else if (userMessage.startsWith("#get")) {
-        const rate = getConfig(userId);
-        await replyToUser(replyToken, "Rate is " + rate);
+      if (userMessage.startsWith("#")) {
+        const command = userMessage.toLocaleLowerCase();
+        if (command.startsWith("#set")) {
+          const rate = toNumber(command.split("#set")[1].trim());
+          config[userId] = rate;
+          await replyToUser(replyToken, "Setting OK");
+        } else if (command.startsWith("#get")) {
+          const rate = getConfig(userId);
+          await replyToUser(replyToken, "Rate is " + rate);
+        } else {
+          await replyToUser(replyToken, "invalid command");
+        }
       } else {
-        const rate = getConfig(userId);
-        const response = processWithRAG(toNumber(userMessage) * rate);
-        await replyToUser(replyToken, response);
+        const value = toNumber(userMessage);
+        if (value !== 0) {
+          const rate = getConfig(userId);
+          const response = processWithRAG(value * rate);
+          await replyToUser(replyToken, response);
+        }
       }
     }
   }
-
   res.sendStatus(200);
 });
 
