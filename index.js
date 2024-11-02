@@ -12,10 +12,6 @@ const config = {};
 
 let _defaultRate = 0;
 
-app.get("/favicon.ico", async (req, res) => {
-  res.sendStatus(200);
-});
-
 app.get("/", async (req, res) => {
   res.sendStatus(200);
 });
