@@ -14,9 +14,10 @@ app.post("/webhook", async (req, res) => {
   const events = req.body.events;
 
   for (const event of events) {
+    const userId = event.source.userId;
+    await loading(userId);
     if (event.type === "message" && event.message.type === "text") {
       const userMessage = event.message.text;
-      const userId = event.source.userId;
       const replyToken = event.replyToken;
 
       if (userMessage.startsWith("#")) {
@@ -63,6 +64,22 @@ function getConfig(userId) {
 
 function processWithRAG(message) {
   return `${message} THB`;
+}
+
+async function loading(userId) {
+  const lineEndpoint = "https://api.line.me/v2/bot/chat/loading/start";
+  await axios.post(
+    lineEndpoint,
+    {
+      data: { chatId: userId },
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${LINE_KEY}`,
+      },
+    }
+  );
 }
 
 async function replyToUser(replyToken, message) {
