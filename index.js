@@ -10,6 +10,8 @@ app.use(bodyParser.json());
 
 global.config = {};
 
+global.defaultRate = (await defaultRate()) / 100 ?? 0.0;
+
 app.get("/", async (req, res) => {
   res.sendStatus(200);
 });
@@ -133,6 +135,5 @@ async function replyToUser(replyToken, message) {
 }
 
 app.listen(PORT, async () => {
-  global.defaultRate = (await defaultRate()) / 100;
   console.log(`Server is running on port ${PORT}`);
 });
