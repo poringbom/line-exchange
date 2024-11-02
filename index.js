@@ -37,25 +37,20 @@ app.post("/webhook", async (req, res) => {
           const rate = getConfig(userId);
           await replyToUser(replyToken, "Rate is " + rate);
         } else if (command.startsWith("#re")) {
-          _defaultRate = defaultRate();
-          await replyToUser(replyToken, "refresh OK");
-        } else if (
-          command.startsWith("#now") ||
-          command === "#" ||
-          command === "now" ||
-          command.length === 1
-        ) {
-          const now = await defaultRate();
-          await replyToUser(replyToken, "now rate is" + now);
+          _defaultRate = await defaultRate();
+          await replyToUser(replyToken, "refresh OK, Rate is " + _defaultRate);
         } else {
-          await replyToUser(replyToken, "invalid command");
+          const now = await defaultRate();
+          await replyToUser(replyToken, "now rate from exchange is" + now);
         }
       } else {
-        const value = toNumber(userMessage);
-        if (value !== 0) {
+        if (isNumber(userMessage)) {
           const rate = getConfig(userId);
-          const response = processWithRAG(value * rate);
+          const response = processWithRAG(toNumber(value) * rate);
           await replyToUser(replyToken, response);
+        } else {
+          const now = await defaultRate();
+          await replyToUser(replyToken, "now rate from exchange is" + now);
         }
       }
     }
@@ -68,6 +63,15 @@ function toNumber(text) {
     return parseFloat(text);
   } catch (error) {
     return 0;
+  }
+}
+
+function isNumber(text) {
+  try {
+    parseFloat(text);
+    return true;
+  } catch (error) {
+    return false;
   }
 }
 
