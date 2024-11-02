@@ -67,12 +67,7 @@ function toNumber(text) {
 }
 
 function isNumber(text) {
-  try {
-    parseFloat(text);
-    return true;
-  } catch (error) {
-    return false;
-  }
+  return typeof text === "number";
 }
 
 function getConfig(userId) {
