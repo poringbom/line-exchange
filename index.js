@@ -37,12 +37,14 @@ app.post("/webhook", async (req, res) => {
           const rate = getConfig(userId);
           await replyToUser(replyToken, "Rate is " + rate);
         } else if (command.startsWith("#re")) {
-          _defaultRate = await defaultRate();
           delete config[userId];
           await replyToUser(replyToken, "refresh OK, Rate is " + _defaultRate);
         } else {
-          const now = await defaultRate();
-          await replyToUser(replyToken, "now rate from exchange is " + now);
+          _defaultRate = await defaultRate();
+          await replyToUser(
+            replyToken,
+            "now rate from exchange is " + _defaultRate
+          );
         }
       } else {
         if (isNumber(userMessage)) {
@@ -50,8 +52,11 @@ app.post("/webhook", async (req, res) => {
           const response = processWithRAG(toNumber(userMessage) * rate);
           await replyToUser(replyToken, response);
         } else {
-          const now = await defaultRate();
-          await replyToUser(replyToken, "now rate from exchange is " + now);
+          _defaultRate = await defaultRate();
+          await replyToUser(
+            replyToken,
+            "now rate from exchange is " + _defaultRate
+          );
         }
       }
     }
