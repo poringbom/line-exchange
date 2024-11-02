@@ -81,11 +81,11 @@ function processWithRAG(message) {
 
 async function defaultRate() {
   const endpoint =
-    "https://www.bot.or.th/content/bot/en/statistics/exchange-rate/jcr:content/root/container/statisticstable1.labels.json";
+    "https://www.bot.or.th/content/bot/en/statistics/exchange-rate/jcr:content/root/container/statisticstable2.results.level3cache.json";
   const response = await axios.get(endpoint, {});
-  const list = response?.data?.allCurrenciesList;
-  const rate = list.find((item) => item.currencyId === "JPY");
-  return rate;
+  const list = response?.data?.responseContent;
+  const rate = list?.find((item) => item.currency_id === "JPY")?.selling;
+  return rate ?? 0.0;
 }
 
 async function loading(userId) {
