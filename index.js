@@ -10,14 +10,16 @@ app.use(bodyParser.json());
 
 const config = {};
 
+const _defaultRate = 0;
+
 app.post("/webhook", async (req, res) => {
   const events = req.body.events;
 
   for (const event of events) {
     if (event.type === "message" && event.message.type === "text") {
-      const userMessage = event.message.text;
-      const replyToken = event.replyToken;
-      const userId = event.source.userId;
+      const userMessage = event?.message?.text;
+      const replyToken = event?.replyToken;
+      const userId = event?.source?.userId;
 
       await loading(userId);
 
@@ -30,6 +32,11 @@ app.post("/webhook", async (req, res) => {
         } else if (command.startsWith("#get")) {
           const rate = getConfig(userId);
           await replyToUser(replyToken, "Rate is " + rate);
+        } else if (command.startsWith("#re")) {
+          _defaultRate = defaultRate();
+          await replyToUser(replyToken, "refresh OK");
+        } else if (command.startsWith("#now")) {
+          await replyToUser(replyToken, "now rate is" + _defaultRate);
         } else {
           await replyToUser(replyToken, "invalid command");
         }
@@ -55,16 +62,19 @@ function toNumber(text) {
 }
 
 function getConfig(userId) {
-  const rate = config[userId];
-  if (rate === undefined || rate === null) {
-    return 0.22;
-  } else {
-    return rate;
-  }
+  return config[userId] ?? _defaultRate;
 }
 
 function processWithRAG(message) {
   return `${message} THB`;
+}
+
+async function defaultRate() {
+  const endpoint =
+    "https://www.mastercard.us/settlement/currencyrate/conversion-rate?fxDate=0000-00-00&transCurr=JPY&crdhldBillCurr=THB&bankFee=0&transAmt=1";
+  const response = await axios.get(endpoint, {});
+  const conversionRate = response?.data?.conversionRate ?? _defaultRate;
+  return conversionRate;
 }
 
 async function loading(userId) {
