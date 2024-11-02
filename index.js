@@ -8,9 +8,7 @@ const LINE_KEY = process.env.LINE_KEY;
 
 app.use(bodyParser.json());
 
-const config = {};
-
-var _defaultRate = 0;
+global.config = {};
 
 app.get("/", async (req, res) => {
   res.sendStatus(200);
@@ -31,19 +29,22 @@ app.post("/webhook", async (req, res) => {
         const command = userMessage.toLocaleLowerCase();
         if (command.startsWith("#set")) {
           const rate = toNumber(command.split("#set")[1].trim());
-          config[userId] = rate;
+          global.config[userId] = rate;
           await replyToUser(replyToken, "Setting OK, Rate is " + rate);
         } else if (command.startsWith("#get")) {
           const rate = getConfig(userId);
           await replyToUser(replyToken, "Rate is " + rate);
         } else if (command.startsWith("#re")) {
-          delete config[userId];
-          await replyToUser(replyToken, "Reset OK, Rate is " + _defaultRate);
-        } else {
-          _defaultRate = (await defaultRate()) / 100;
+          delete global.config[userId];
           await replyToUser(
             replyToken,
-            "now rate from exchange is " + _defaultRate
+            "Reset OK, Rate is " + global.defaultRate
+          );
+        } else {
+          global.defaultRate = (await defaultRate()) / 100;
+          await replyToUser(
+            replyToken,
+            "now rate from exchange is " + global.defaultRate
           );
         }
       } else {
@@ -52,10 +53,10 @@ app.post("/webhook", async (req, res) => {
           const response = processWithRAG(toNumber(userMessage) * rate);
           await replyToUser(replyToken, response);
         } else {
-          _defaultRate = (await defaultRate()) / 100;
+          global.defaultRate = (await defaultRate()) / 100;
           await replyToUser(
             replyToken,
-            "now rate from exchange is " + _defaultRate
+            "now rate from exchange is " + global.defaultRate
           );
         }
       }
@@ -77,7 +78,7 @@ function isNumber(text) {
 }
 
 function getConfig(userId) {
-  return config[userId] ?? _defaultRate;
+  return global.config[userId] ?? global.defaultRate;
 }
 
 function processWithRAG(message) {
@@ -90,7 +91,7 @@ async function defaultRate() {
   const response = await axios.get(endpoint, {});
   const list = response?.data?.responseContent;
   const rate = list?.find((item) => item.currency_id === "JPY")?.selling;
-  return rate ?? _defaultRate;
+  return rate ?? global.defaultRate;
 }
 
 async function loading(userId) {
@@ -132,6 +133,6 @@ async function replyToUser(replyToken, message) {
 }
 
 app.listen(PORT, async () => {
-  _defaultRate = (await defaultRate()) / 100;
+  global.defaultRate = (await defaultRate()) / 100;
   console.log(`Server is running on port ${PORT}`);
 });
