@@ -10,6 +10,8 @@ app.use(bodyParser.json());
 
 global.config = {};
 
+global.defaultRate = 0;
+
 app.get("/", async (req, res) => {
   global.defaultRate = (await defaultRate()) / 100 ?? 0.0;
   res.sendStatus(200);
