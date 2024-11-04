@@ -35,7 +35,7 @@ app.post("/webhook", async (req, res) => {
           global.config[userId] = rate;
           await replyToUser(replyToken, "Setting OK, Rate is " + rate);
         } else if (command.startsWith("#get")) {
-          const rate = getConfig(userId);
+          const rate = await getConfig(userId);
           await replyToUser(replyToken, "Rate is " + rate);
         } else if (command.startsWith("#re")) {
           delete global.config[userId];
@@ -52,7 +52,7 @@ app.post("/webhook", async (req, res) => {
         }
       } else {
         if (isNumber(userMessage)) {
-          const rate = getConfig(userId);
+          const rate = await getConfig(userId);
           const response = processWithRAG(toNumber(userMessage) * rate);
           await replyToUser(replyToken, response);
         } else {
@@ -80,8 +80,12 @@ function isNumber(text) {
   return !isNaN(parseFloat(text));
 }
 
-function getConfig(userId) {
-  return global.config[userId] ?? global.defaultRate;
+async function getConfig(userId) {
+  const rate = global.config[userId] ?? global.defaultRate;
+  if (rate === 0) {
+    rate = await defaultRate();
+  }
+  return rate;
 }
 
 function processWithRAG(message) {
