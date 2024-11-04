@@ -81,7 +81,7 @@ function isNumber(text) {
 }
 
 async function getConfig(userId) {
-  const rate = global.config[userId] ?? global.defaultRate;
+  let rate = global.config[userId] ?? global.defaultRate;
   if (rate === 0) {
     rate = await defaultRate();
   }
