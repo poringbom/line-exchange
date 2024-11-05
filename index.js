@@ -39,6 +39,9 @@ app.post("/webhook", async (req, res) => {
           await replyToUser(replyToken, "Rate is " + rate);
         } else if (command.startsWith("#re")) {
           delete global.config[userId];
+          if (global.defaultRate === 0) {
+            global.defaultRate = (await defaultRate()) / 100;
+          }
           await replyToUser(
             replyToken,
             "Reset OK, Rate is " + global.defaultRate
@@ -83,7 +86,7 @@ function isNumber(text) {
 async function getConfig(userId) {
   let rate = global.config[userId] ?? global.defaultRate;
   if (rate === 0) {
-    rate = await defaultRate();
+    rate = (await defaultRate()) / 100;
   }
   return rate;
 }
