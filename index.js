@@ -59,7 +59,9 @@ app.post("/webhook", async (req, res) => {
           const value = toNumber(userMessage) * rate;
           await replyToUser(
             replyToken,
-            "normal " +
+            "On rate " +
+              rate.toFixed(4) +
+              "\nnormal " +
               value.toFixed(4) +
               " THB \nsub 15%: " +
               (value * 0.85).toFixed(4) +
