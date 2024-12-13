@@ -59,18 +59,21 @@ app.post("/webhook", async (req, res) => {
           const value = toNumber(userMessage) * rate;
           await replyToUser(
             replyToken,
-            `now rate from exchange is
-             normal : ${value} THB
-             sub 15%:  ${value * 0.85} THB
-             sub 10%:  ${value * 0.9} THB
-             sub 5%:  ${value * 0.95} THB
-            `
+            "now rate from exchange is \n normal : " +
+              value.toFixed(4) +
+              " THB \n sub 15%: " +
+              (value * 0.85).toFixed(4) +
+              " THB \n sub 10%:  " +
+              (value * 0.9).toFixed(4) +
+              " THB \n sub 5%:  " +
+              (value * 0.95).toFixed(4) +
+              " THB"
           );
         } else {
           global.defaultRate = ((await defaultRate()) / 100) * 0.99;
           await replyToUser(
             replyToken,
-            `now rate from exchange is ${global.defaultRate}`
+            `now rate from exchange is ${global.defaultRate.toFixed(4)}`
           );
         }
       }
