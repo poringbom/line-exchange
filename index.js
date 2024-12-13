@@ -13,7 +13,7 @@ global.config = {};
 global.defaultRate = 0;
 
 app.get("/", async (req, res) => {
-  global.defaultRate = ((await defaultRate()) / 100) * 0.99 ?? 0.0;
+  global.defaultRate = ((await defaultRate()) / 100) * 0.985 ?? 0.0;
   res.sendStatus(200);
 });
 
@@ -40,14 +40,14 @@ app.post("/webhook", async (req, res) => {
         } else if (command.startsWith("#re")) {
           delete global.config[userId];
           if (global.defaultRate === 0) {
-            global.defaultRate = ((await defaultRate()) / 100) * 0.99;
+            global.defaultRate = ((await defaultRate()) / 100) * 0.985;
           }
           await replyToUser(
             replyToken,
             "Reset OK, Rate is " + global.defaultRate
           );
         } else {
-          global.defaultRate = ((await defaultRate()) / 100) * 0.99;
+          global.defaultRate = ((await defaultRate()) / 100) * 0.985;
           await replyToUser(
             replyToken,
             "now rate from exchange is " + global.defaultRate
@@ -72,7 +72,7 @@ app.post("/webhook", async (req, res) => {
               " THB"
           );
         } else {
-          global.defaultRate = ((await defaultRate()) / 100) * 0.99;
+          global.defaultRate = ((await defaultRate()) / 100) * 0.985;
           await replyToUser(
             replyToken,
             `now rate from exchange is ${global.defaultRate.toFixed(6)}`
@@ -99,7 +99,7 @@ function isNumber(text) {
 async function getConfig(userId) {
   let rate = global.config[userId] ?? global.defaultRate;
   if (rate === 0) {
-    rate = ((await defaultRate()) / 100) * 0.99;
+    rate = ((await defaultRate()) / 100) * 0.985;
   }
   return rate;
 }
