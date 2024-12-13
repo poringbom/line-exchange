@@ -13,7 +13,7 @@ global.config = {};
 global.defaultRate = 0;
 
 app.get("/", async (req, res) => {
-  global.defaultRate = (await defaultRate()) / 100 ?? 0.0;
+  global.defaultRate = ((await defaultRate()) / 100) * 0.99 ?? 0.0;
   res.sendStatus(200);
 });
 
@@ -40,14 +40,14 @@ app.post("/webhook", async (req, res) => {
         } else if (command.startsWith("#re")) {
           delete global.config[userId];
           if (global.defaultRate === 0) {
-            global.defaultRate = (await defaultRate()) / 100;
+            global.defaultRate = ((await defaultRate()) / 100) * 0.99;
           }
           await replyToUser(
             replyToken,
             "Reset OK, Rate is " + global.defaultRate
           );
         } else {
-          global.defaultRate = (await defaultRate()) / 100;
+          global.defaultRate = ((await defaultRate()) / 100) * 0.99;
           await replyToUser(
             replyToken,
             "now rate from exchange is " + global.defaultRate
@@ -56,13 +56,21 @@ app.post("/webhook", async (req, res) => {
       } else {
         if (isNumber(userMessage)) {
           const rate = await getConfig(userId);
-          const response = processWithRAG(toNumber(userMessage) * rate);
-          await replyToUser(replyToken, response);
-        } else {
-          global.defaultRate = (await defaultRate()) / 100;
+          const value = toNumber(userMessage) * rate;
           await replyToUser(
             replyToken,
-            "now rate from exchange is " + global.defaultRate
+            `now rate from exchange is
+             normal : ${value} THB
+             sub 15%:  ${value * 0.85} THB
+             sub 10%:  ${value * 0.9} THB
+             sub 5%:  ${value * 0.95} THB
+            `
+          );
+        } else {
+          global.defaultRate = ((await defaultRate()) / 100) * 0.99;
+          await replyToUser(
+            replyToken,
+            `now rate from exchange is ${global.defaultRate}`
           );
         }
       }
@@ -86,13 +94,9 @@ function isNumber(text) {
 async function getConfig(userId) {
   let rate = global.config[userId] ?? global.defaultRate;
   if (rate === 0) {
-    rate = (await defaultRate()) / 100;
+    rate = ((await defaultRate()) / 100) * 0.99;
   }
   return rate;
-}
-
-function processWithRAG(message) {
-  return `${message} THB`;
 }
 
 async function defaultRate() {
