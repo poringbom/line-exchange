@@ -48,10 +48,7 @@ app.post("/webhook", async (req, res) => {
           );
         } else {
           global.defaultRate = ((await defaultRate()) / 100) * 0.985;
-          await replyToUser(
-            replyToken,
-            "now rate from exchange is " + global.defaultRate
-          );
+          await replyToUser(replyToken, "now rate : " + global.defaultRate);
         }
       } else {
         if (isNumber(userMessage)) {
@@ -63,10 +60,14 @@ app.post("/webhook", async (req, res) => {
               rate.toFixed(6) +
               "\nnormal " +
               value.toFixed(6) +
+              " THB \nsub 17%: " +
+              (value * 0.83).toFixed(6) +
               " THB \nsub 15%: " +
               (value * 0.85).toFixed(6) +
               " THB \nsub 10%:  " +
               (value * 0.9).toFixed(6) +
+              " THB \nsub 7%:  " +
+              (value * 0.93).toFixed(6) +
               " THB \nsub 5%:  " +
               (value * 0.95).toFixed(6) +
               " THB"
@@ -75,7 +76,7 @@ app.post("/webhook", async (req, res) => {
           global.defaultRate = ((await defaultRate()) / 100) * 0.985;
           await replyToUser(
             replyToken,
-            `now rate from exchange is ${global.defaultRate.toFixed(6)}`
+            `now rate : ${global.defaultRate.toFixed(6)}`
           );
         }
       }
